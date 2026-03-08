@@ -1,109 +1,43 @@
-import requests
-import time
-import threading
-from telegram import Update, Bot
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+import asyncio
+from telegram import Bot
+from TikTokLive import TikTokLiveClient
+from TikTokLive.events import ConnectEvent, GiftEvent
 
-TOKEN = "8278790899:AAGTdU-Jysjl4ALt9dwOOyhX5J_HolnaE_A"
-CHANNEL = "@babekinbotu"
+TOKEN = "8298214673:AAHZj-eLb43e3FpqLIxb1s5g8e29smcn0x0"
+CHANNEL = "@Babekinbotu"
+
+USERS = [
+    "username1",
+    "username2",
+    "username3"
+]
 
 bot = Bot(token=TOKEN)
 
-admins = [8120551479]
+async def start_client(username):
+    client = TikTokLiveClient(unique_id=username)
 
-tiktok_users = [
-"tiktok",
-"livecreator",
-"gaminglive"
-]
+    @client.on(ConnectEvent)
+    async def on_connect(event: ConnectEvent):
+        await bot.send_message(
+            chat_id=CHANNEL,
+            text=f"🔴 {username} TikTok live başladı!\nhttps://www.tiktok.com/@{username}/live"
+        )
 
-def check_live(username):
+    @client.on(GiftEvent)
+    async def on_gift(event: GiftEvent):
+        if "Treasure" in event.gift.name:
+            await bot.send_message(
+                chat_id=CHANNEL,
+                text=f"🎁 {username} live-də sandıq çıxdı!\nhttps://www.tiktok.com/@{username}/live"
+            )
 
-    try:
-        url = f"https://www.tiktok.com/@{username}/live"
+    await client.start()
 
-        r = requests.get(url, timeout=10)
+async def main():
+    tasks = []
+    for user in USERS:
+        tasks.append(asyncio.create_task(start_client(user)))
+    await asyncio.gather(*tasks)
 
-        if r.status_code == 200:
-            return True
-
-    except:
-        return False
-
-
-def auto_scan():
-
-    while True:
-
-        for user in tiktok_users:
-
-            if check_live(user):
-
-                link = f"https://www.tiktok.com/@{user}/live"
-
-                text = f"""
-🔥 TikTok CANLI
-
-👤 {user}
-
-🎁 Sandıq ola bilər
-
-🔗 {link}
-"""
-
-                try:
-                    bot.send_message(chat_id=CHANNEL, text=text)
-                except:
-                    pass
-
-        time.sleep(300)
-
-
-async def sandig(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    text = "🔥 Tapılan canlılar:\n\n"
-
-    for user in tiktok_users:
-
-        text += f"https://www.tiktok.com/@{user}/live\n"
-
-    await update.message.reply_text(text)
-
-
-async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    if update.effective_user.id not in admins:
-        return
-
-    try:
-
-        username = context.args[0]
-
-        tiktok_users.append(username)
-
-        await update.message.reply_text("TikTok hesab əlavə edildi")
-
-    except:
-
-        await update.message.reply_text("İstifadə: /add username")
-
-
-async def users(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    text = "Yoxlanan TikTok hesabları:\n\n"
-
-    for u in tiktok_users:
-        text += u + "\n"
-
-    await update.message.reply_text(text)
-
-
-app = ApplicationBuilder().token(TOKEN).build()
-
-app.add_handler(CommandHandler("sandig", sandig))
-app.add_handler(CommandHandler("add", add))
-app.add_handler(CommandHandler("users", users))
-
-threading.Thread(target=auto_scan).start()
-
-app.run_polling()
+asyncio.run(main())
