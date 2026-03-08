@@ -1,5 +1,5 @@
 import asyncio
-from TikTokLive import TikTokLiveClient
+from TikTokLive import TikTokLiveClient, TreasureBoxEvent
 from TikTokLive.events import ConnectEvent
 from telegram import Bot
 
