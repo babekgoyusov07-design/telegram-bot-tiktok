@@ -1,6 +1,6 @@
 import asyncio
 from TikTokLive import TikTokLiveClient
-from TikTokLive.events import ConnectEvent, TreasureBoxEvent
+from TikTokLive.events import ConnectEvent
 from telegram import Bot
 
 TELEGRAM_TOKEN = "8298214673:AAHZj-eLb43e3FpqLIxb1s5g8e29smcn0x0"
