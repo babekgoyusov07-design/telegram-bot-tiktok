@@ -8,7 +8,7 @@ CHANNEL = "@Babekinbotu"
 
 USERS = [
     "Aynurə",
-    "username2",
+    "sandiq.orusu.gldi",
     "username3"
 ]
 
