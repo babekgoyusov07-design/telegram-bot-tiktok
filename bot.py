@@ -7,7 +7,7 @@ TOKEN = "8298214673:AAHZj-eLb43e3FpqLIxb1s5g8e29smcn0x0"
 CHANNEL = "@Babekinbotu"
 
 USERS = [
-    "username1",
+    "aynur1335",
     "username2",
     "username3"
 ]
