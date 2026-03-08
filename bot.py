@@ -9,13 +9,13 @@ CHANNEL = "@Babekinbotu"
 USERS = [
     "aynur1335",
     "sandiq.orusu.gldi",
-    "username3"
+    "babekb3"
 ]
 
 bot = Bot(token=TOKEN)
 
 async def start_client(username):
-    client = TikTokLiveClient(unique_id=username)
+    client = TikTokLiveClient(unique_id="sandiq.orusu.gldi")
 
     @client.on(ConnectEvent)
     async def on_connect(event: ConnectEvent):
