@@ -1,43 +1,50 @@
 import asyncio
-from telegram import Bot
 from TikTokLive import TikTokLiveClient
-from TikTokLive.events import ConnectEvent, GiftEvent
+from TikTokLive.events import ConnectEvent, TreasureBoxEvent
+from telegram import Bot
 
-TOKEN = "8298214673:AAHZj-eLb43e3FpqLIxb1s5g8e29smcn0x0"
-CHANNEL = "@Babekinbotu"
+TELEGRAM_TOKEN = "8298214673:AAHZj-eLb43e3FpqLIxb1s5g8e29smcn0x0"
+CHAT_ID = "@Babekinbotu"
 
 USERS = [
-    "aynur1335",
-    "sandiq.orusu.gldi",
-    "babekb3"
+"sandiq.orusu.gldi",
+"aynur1335"
 ]
 
-bot = Bot(token=TOKEN)
+bot = Bot(token=TELEGRAM_TOKEN)
 
 async def start_client(username):
-    client = TikTokLiveClient(unique_id="sandiq.orusu.gldi")
+    try:
+        client = TikTokLiveClient(unique_id=username)
 
-    @client.on(ConnectEvent)
-    async def on_connect(event: ConnectEvent):
-        await bot.send_message(
-            chat_id=CHANNEL,
-            text=f"🔴 {username} TikTok live başladı!\nhttps://www.tiktok.com/@{username}/live"
-        )
+        @client.on(ConnectEvent)
+        async def on_connect(event):
+            print(f"{username} live qoşuldu")
 
-    @client.on(GiftEvent)
-    async def on_gift(event: GiftEvent):
-        if "Treasure" in event.gift.name:
-            await bot.send_message(
-                chat_id=CHANNEL,
-                text=f"🎁 {username} live-də sandıq çıxdı!\nhttps://www.tiktok.com/@{username}/live"
-            )
+        @client.on(TreasureBoxEvent)
+        async def on_treasure(event):
+            msg = f"""
+🎁 TikTok Sandıq Tapıldı
 
-    await client.start()
+👤 User: {username}
+⏱ Vaxt: {event.treasure_box.duration} saniyə
+👥 İştirak: {event.treasure_box.user_count}
+
+🔗 https://www.tiktok.com/@{username}/live
+"""
+            await bot.send_message(chat_id=CHAT_ID, text=msg)
+            print("Sandıq göndərildi")
+
+        await client.start()
+
+    except Exception as e:
+        print(f"Xəta: {e}")
 
 async def main():
     tasks = []
     for user in USERS:
-        tasks.append(asyncio.create_task(start_client(user)))
+        tasks.append(start_client(user))
+
     await asyncio.gather(*tasks)
 
 asyncio.run(main())
