@@ -106,4 +106,4 @@ app.add_handler(CommandHandler("users", users))
 
 threading.Thread(target=auto_scan).start()
 
-app.run_polling()0
+app.run_polling()
